@@ -1,17 +1,17 @@
 package com.assignment.bookstore.service;
 
-import com.assignment.bookstore.beans.domain.BookOrderLine;
-import com.assignment.bookstore.beans.domain.Customer;
-import com.assignment.bookstore.beans.domain.Order;
+import com.assignment.bookstore.beans.domain.*;
 import com.assignment.bookstore.beans.dto.mapper.AddressMapper;
 import com.assignment.bookstore.beans.dto.mapper.BookMapper;
 import com.assignment.bookstore.beans.dto.order.BookOrderLineDTO;
 import com.assignment.bookstore.beans.dto.order.OrderRequestDTO;
 import com.assignment.bookstore.beans.dto.order.OrderResponseDTO;
 import com.assignment.bookstore.exception.NoDataFoundException;
+import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.repository.BookRepository;
 import com.assignment.bookstore.repository.CustomerRepository;
 import com.assignment.bookstore.repository.OrderRepository;
+import com.assignment.bookstore.repository.StockRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,7 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.BOOK_NOT_FOUND;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.CUSTOMER_NOT_FOUND;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -50,24 +51,32 @@ public class OrderServiceImpl implements OrderService {
 
         Set<BookOrderLine> bookOrderLines = requestDTO.getBook()
                 .parallelStream()
-                .map(bookOrderLineDTO -> createBookOrderLine(bookOrderLineDTO, order))
+                .map(this::createBookOrderLine)
                 .collect(Collectors.toCollection(HashSet::new));
 
         order.setCustomer(customer);
         order.setBookOrderLines(bookOrderLines);
 
-        Order savedOrder = orderRepository.save(order);
+        Order savedOrder = orderRepository.saveAndFlush(order);
 
        return mapToOrderResponseDTO(savedOrder);
     }
 
-    private BookOrderLine createBookOrderLine(BookOrderLineDTO bookOrderLineDTO, Order order) {
+    private BookOrderLine createBookOrderLine(BookOrderLineDTO bookOrderLineDTO) {
         BookOrderLine orderLine = new BookOrderLine();
-        orderLine.setBook(bookRepository
+
+        Book book = bookRepository
                 .findById(bookOrderLineDTO.getBookId())
-                .orElseThrow(() -> new NoDataFoundException(BOOK_NOT_FOUND)));
+                .orElseThrow(() -> new NoDataFoundException(BOOK_NOT_FOUND));
+
+        if (book.getStock().getBookCount() < bookOrderLineDTO.getOrderQuantity()) {
+            throw new ValidationException(book.getTitle() + " is out of stock");
+        }
+
+        Stock stock = book.getStock();
+        stock.setBookCount(stock.getBookCount() - bookOrderLineDTO.getOrderQuantity());
+        orderLine.setBook(book);
         orderLine.setOrderQuantity(bookOrderLineDTO.getOrderQuantity());
-        orderLine.setOrder(order);
         return orderLine;
     }
 

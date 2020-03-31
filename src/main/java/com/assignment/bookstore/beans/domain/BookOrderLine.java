@@ -23,5 +23,5 @@ public class BookOrderLine {
     private @EqualsAndHashCode.Exclude Book book;
 
     @Column
-    private Integer orderQuantity = 0;
+    private @EqualsAndHashCode.Exclude Integer orderQuantity = 0;
 }

@@ -18,6 +18,7 @@ import com.assignment.bookstore.repository.StockRepository;
 import com.assignment.bookstore.repository.specification.BookAuthorSpec;
 import com.assignment.bookstore.repository.specification.BookISBNSpec;
 import com.assignment.bookstore.repository.specification.BookTitleSpec;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
@@ -111,6 +112,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @HystrixCommand(fallbackMethod = "getFallbackMediaCoverage")
     public List<MediaCoverage> searchMediaCoverage(String title) {
         ResponseEntity<MediaCoverage[]> response = restTemplate.getForEntity(mediaURL, MediaCoverage[].class);
 
@@ -118,5 +120,9 @@ public class BookServiceImpl implements BookService {
                 .parallelStream()
                 .filter(e -> e.getTitle().contains(title) || e.getBody().contains(title))
                 .collect(toList());
+    }
+
+    public List<MediaCoverage> getFallbackMediaCoverage(String title) {
+        return Arrays.asList(new MediaCoverage(null,null,"dummy title","dummy body"));
     }
 }

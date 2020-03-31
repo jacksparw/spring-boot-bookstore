@@ -1,6 +1,7 @@
 package com.assignment.bookstore.beans.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -30,7 +31,7 @@ public class Book {
     private Author author;
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private @EqualsAndHashCode.Exclude BigDecimal price;
 
     @ManyToOne(cascade = {
             CascadeType.DETACH,
@@ -38,5 +39,5 @@ public class Book {
             CascadeType.PERSIST,
             CascadeType.REFRESH})
     @JoinColumn(name = "stockId")
-    private Stock stock;
+    private @EqualsAndHashCode.Exclude Stock stock;
 }

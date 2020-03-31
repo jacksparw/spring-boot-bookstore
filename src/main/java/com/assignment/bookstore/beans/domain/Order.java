@@ -1,6 +1,7 @@
 package com.assignment.bookstore.beans.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -23,9 +24,9 @@ public class Order {
             CascadeType.PERSIST,
             CascadeType.REFRESH})
     @JoinColumn(name = "customer", nullable = false)
-    private Customer customer;
+    private @EqualsAndHashCode.Exclude Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)
-    private @ToString.Exclude Set<BookOrderLine> bookOrderLines;
+    private @EqualsAndHashCode.Exclude @ToString.Exclude Set<BookOrderLine> bookOrderLines;
 }
