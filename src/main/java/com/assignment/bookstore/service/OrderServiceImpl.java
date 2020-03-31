@@ -57,6 +57,8 @@ public class OrderServiceImpl implements OrderService {
         order.setCustomer(customer);
         order.setBookOrderLines(bookOrderLines);
 
+        bookOrderLines.forEach(orderLine -> orderLine.setOrder(order));
+
         Order savedOrder = orderRepository.saveAndFlush(order);
 
        return mapToOrderResponseDTO(savedOrder);
