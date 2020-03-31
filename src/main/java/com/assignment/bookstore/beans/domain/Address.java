@@ -1,6 +1,7 @@
 package com.assignment.bookstore.beans.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -26,5 +27,5 @@ public class Address {
     private String state;
 
     @OneToOne(mappedBy = "address")
-    private @ToString.Exclude Customer customer;
+    private @EqualsAndHashCode.Exclude @ToString.Exclude Customer customer;
 }

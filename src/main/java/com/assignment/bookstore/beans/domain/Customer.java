@@ -25,7 +25,7 @@ public class Customer {
             CascadeType.PERSIST,
             CascadeType.REFRESH})
     @JoinColumn(name = "address")
-    private @EqualsAndHashCode.Exclude Address address;
+    private Address address;
 
     @OneToMany(mappedBy = "customer", cascade = {
             CascadeType.DETACH,

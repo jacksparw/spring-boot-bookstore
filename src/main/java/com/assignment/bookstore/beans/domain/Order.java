@@ -24,7 +24,7 @@ public class Order {
             CascadeType.PERSIST,
             CascadeType.REFRESH})
     @JoinColumn(name = "customer", nullable = false)
-    private @EqualsAndHashCode.Exclude Customer customer;
+    private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)

@@ -18,15 +18,15 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long stockId;
 
-    @Column
-    private @EqualsAndHashCode.Exclude Integer bookCount;
-
     @OneToMany(mappedBy = "stock", cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH})
-    private @EqualsAndHashCode.Exclude @ToString.Exclude List<Book> books;
+    private @ToString.Exclude List<Book> books;
+
+    @Column
+    private @EqualsAndHashCode.Exclude Integer bookCount;
 
     public Stock(Integer bookCount) {
         this.bookCount = bookCount;

@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new NoDataFoundException(BOOK_NOT_FOUND));
 
         if (book.getStock().getBookCount() < bookOrderLineDTO.getOrderQuantity()) {
-            throw new ValidationException(book.getTitle() + " is out of stock");
+            throw new ValidationException("some books in order are out of stock");
         }
 
         Stock stock = book.getStock();

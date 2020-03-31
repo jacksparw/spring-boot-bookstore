@@ -16,11 +16,11 @@ public class BookOrderLine {
 
     @ManyToOne
     @JoinColumn(name = "orderId")
-    private @EqualsAndHashCode.Exclude Order order;
+    private Order order;
 
     @ManyToOne
     @JoinColumn(name = "bookId")
-    private @EqualsAndHashCode.Exclude Book book;
+    private Book book;
 
     @Column
     private @EqualsAndHashCode.Exclude Integer orderQuantity = 0;
