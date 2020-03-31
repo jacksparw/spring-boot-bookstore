@@ -14,7 +14,6 @@ import com.assignment.bookstore.exception.NoDataFoundException;
 import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.repository.AuthorRepository;
 import com.assignment.bookstore.repository.BookRepository;
-import com.assignment.bookstore.repository.StockRepository;
 import com.assignment.bookstore.repository.specification.BookAuthorSpec;
 import com.assignment.bookstore.repository.specification.BookISBNSpec;
 import com.assignment.bookstore.repository.specification.BookTitleSpec;
@@ -24,6 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -54,6 +56,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public void addBook(BookRequestDTO bookRequest) {
 
         Optional<Book> optionalBook = bookRepository.findBookByTitle(bookRequest.getTitle());

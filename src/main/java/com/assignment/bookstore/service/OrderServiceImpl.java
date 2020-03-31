@@ -13,6 +13,9 @@ import com.assignment.bookstore.repository.CustomerRepository;
 import com.assignment.bookstore.repository.OrderRepository;
 import com.assignment.bookstore.repository.StockRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -32,7 +35,10 @@ public class OrderServiceImpl implements OrderService {
     private final AddressMapper addressMapper;
 
     public OrderServiceImpl(OrderRepository orderRepository,
-                            CustomerRepository customerRepository, BookRepository bookRepository, BookMapper bookMapper, AddressMapper addressMapper) {
+                            CustomerRepository customerRepository,
+                            BookRepository bookRepository,
+                            BookMapper bookMapper,
+                            AddressMapper addressMapper) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.bookRepository = bookRepository;
@@ -41,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public OrderResponseDTO createOrder(OrderRequestDTO requestDTO) {
 
         Customer customer = customerRepository
@@ -50,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
 
         Set<BookOrderLine> bookOrderLines = requestDTO.getBook()
-                .parallelStream()
+                .stream()
                 .map(this::createBookOrderLine)
                 .collect(Collectors.toCollection(HashSet::new));
 
