@@ -1,6 +1,7 @@
 package com.assignment.bookstore.beans.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -21,8 +22,8 @@ public class Author {
     private String authorName;
 
     @Column
-    private String description;
+    private @EqualsAndHashCode.Exclude String description;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private @ToString.Exclude List<Book> book;
+    private @EqualsAndHashCode.Exclude @ToString.Exclude List<Book> book;
 }

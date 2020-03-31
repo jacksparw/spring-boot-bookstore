@@ -2,16 +2,19 @@ package com.assignment.bookstore.service;
 
 import com.assignment.bookstore.beans.domain.Author;
 import com.assignment.bookstore.beans.domain.Book;
+import com.assignment.bookstore.beans.domain.Stock;
 import com.assignment.bookstore.beans.dto.AuthorDTO;
+import com.assignment.bookstore.beans.dto.MediaCoverage;
 import com.assignment.bookstore.beans.dto.book.BookAuthorDTO;
 import com.assignment.bookstore.beans.dto.book.BookDTO;
 import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
 import com.assignment.bookstore.beans.dto.mapper.AuthorMapper;
 import com.assignment.bookstore.beans.dto.mapper.BookMapper;
-import com.assignment.bookstore.beans.dto.MediaCoverage;
 import com.assignment.bookstore.exception.NoDataFoundException;
+import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.repository.AuthorRepository;
 import com.assignment.bookstore.repository.BookRepository;
+import com.assignment.bookstore.repository.StockRepository;
 import com.assignment.bookstore.repository.specification.BookAuthorSpec;
 import com.assignment.bookstore.repository.specification.BookISBNSpec;
 import com.assignment.bookstore.repository.specification.BookTitleSpec;
@@ -22,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.BOOK_NOT_FOUND;
@@ -54,13 +54,19 @@ public class BookServiceImpl implements BookService {
     @Override
     public void addBook(BookRequestDTO bookRequest) {
 
+        Optional<Book> optionalBook = bookRepository.findBookByTitle(bookRequest.getTitle());
+
         Author author = authorRepository
                 .findById(bookRequest.getAuthorId())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NoDataFoundException("Author not found"));
+
+        if (optionalBook.isPresent()) {
+            throw new ValidationException("Book Already Present");
+        }
 
         Book book = bookMapper.bookDtoToBook(bookRequest);
         book.setAuthor(author);
-
+        book.setStock(new Stock(bookRequest.getCount()));
         bookRepository.save(book);
     }
 

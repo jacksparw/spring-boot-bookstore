@@ -31,4 +31,12 @@ public class Book {
 
     @Column(nullable = false)
     private BigDecimal price;
+
+    @ManyToOne(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH})
+    @JoinColumn(name = "stockId")
+    private Stock stock;
 }
