@@ -1,5 +1,8 @@
 package com.assignment.bookstore.controller.book;
 
+import capital.scalable.restdocs.AutoDocumentation;
+import capital.scalable.restdocs.jackson.JacksonResultHandlers;
+import capital.scalable.restdocs.response.ResponseModifyingPreprocessors;
 import com.assignment.bookstore.TestUtil;
 import com.assignment.bookstore.beans.dto.book.BookDTO;
 import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
@@ -8,33 +11,76 @@ import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.service.BookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.cli.CliDocumentation;
+import org.springframework.restdocs.http.HttpDocumentation;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ExtendWith({MockitoExtension.class, RestDocumentationExtension.class, SpringExtension.class})
+@AutoConfigureRestDocs(outputDir = "target/generated-snippets")
 @WebMvcTest(BookController.class)
 class AddBookOperationTest {
 
-    private @Autowired MockMvc mockMvc;
     private @MockBean BookService bookService;
+    private @Autowired WebApplicationContext webApplicationContext;
+
+    private MockMvc mockMvc;
     private BookDTO validBookDTO;
 
     @BeforeEach
-    public void setup() {
+    public void setup(RestDocumentationContextProvider restDocumentation) {
 
         validBookDTO = BookDTO.builder()
                 .title("DummyBook")
                 .price(BigDecimal.TEN)
                 .isbn("1")
+                .build();
+
+        mockMvc =  MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(documentationConfiguration(restDocumentation))
+                .alwaysDo(JacksonResultHandlers.prepareJackson(TestUtil.mapper))
+                .alwaysDo(MockMvcRestDocumentation.document("{method-name}",
+                        Preprocessors.preprocessRequest(),
+                        Preprocessors.preprocessResponse(
+                                ResponseModifyingPreprocessors.replaceBinaryContent(),
+                                ResponseModifyingPreprocessors.limitJsonArrayLength(TestUtil.mapper),
+                                Preprocessors.prettyPrint())))
+                .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
+                        .uris()
+                        .withScheme("http")
+                        .withHost("localhost")
+                        .withPort(8080)
+                        .and().snippets()
+                        .withDefaults(CliDocumentation.curlRequest(),
+                                HttpDocumentation.httpRequest(),
+                                HttpDocumentation.httpResponse(),
+                                AutoDocumentation.requestFields(),
+                                AutoDocumentation.responseFields(),
+                                AutoDocumentation.pathParameters(),
+                                AutoDocumentation.requestParameters(),
+                                AutoDocumentation.description(),
+                                AutoDocumentation.methodAndPath(),
+                                AutoDocumentation.section()))
                 .build();
     }
 
@@ -42,6 +88,7 @@ class AddBookOperationTest {
     void testAddBook_MissingRequestBody() throws Exception {
         mockMvc.perform(
                 post("/book"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("invalid message"));
@@ -53,6 +100,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{This is not valid Json should fail][/}"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("invalid message"));
@@ -68,6 +116,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("authorId missing"));
@@ -84,6 +133,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("invalid authorId"));
@@ -99,6 +149,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("stock count missing"));
@@ -115,6 +166,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("invalid stock"));
@@ -133,6 +185,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("title is mandatory"));
@@ -151,6 +204,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("isbn is mandatory"));
@@ -169,6 +223,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("Price is missing"));
@@ -187,6 +242,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("invalid price must be greater than zero"));
@@ -205,6 +261,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("book already present"));
@@ -223,6 +280,7 @@ class AddBookOperationTest {
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Book Added"));

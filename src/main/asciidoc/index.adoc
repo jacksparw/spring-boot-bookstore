@@ -1,0 +1,34 @@
+Technical assignment - Online Book Store
+
+This is an example output for a service running at http://localhost:8080
+
+include::{snippets}/test-add-book/auto-section.adoc[]
+include::{snippets}/test-add-book_-book-already-present/auto-section.adoc[]
+include::{snippets}/test-add-book_-invalid-author-id/auto-section.adoc[]
+include::{snippets}/test-add-book_-invalid-i-s-b-n/auto-section.adoc[]
+include::{snippets}/test-add-book_-invalid-json-request-body/auto-section.adoc[]
+include::{snippets}/test-add-book_-invalid-price/auto-section.adoc[]
+include::{snippets}/test-add-book_-invalid-title/auto-section.adoc[]
+include::{snippets}/test-add-book_-less-than-one-stock/auto-section.adoc[]
+include::{snippets}/test-add-book_-missing-author-id/auto-section.adoc[]
+include::{snippets}/test-add-book_-missing-price/auto-section.adoc[]
+include::{snippets}/test-add-book_-missing-request-body/auto-section.adoc[]
+include::{snippets}/test-add-book_missing-stock/auto-section.adoc[]
+include::{snippets}/test-buy-book/auto-section.adoc[]
+include::{snippets}/test-buy-book_-book-not-found-in-d-b/auto-section.adoc[]
+include::{snippets}/test-buy-book_-customer-not-found-in-d-b/auto-section.adoc[]
+include::{snippets}/test-buy-book_-invalid-book-id/auto-section.adoc[]
+include::{snippets}/test-buy-book_-invalid-customer-id/auto-section.adoc[]
+include::{snippets}/test-buy-book_-invalid-order-quantity/auto-section.adoc[]
+include::{snippets}/test-buy-book_-missing-book-id/auto-section.adoc[]
+include::{snippets}/test-buy-book_-missing-order-quantity/auto-section.adoc[]
+include::{snippets}/test-buy-book_-stock-error/auto-section.adoc[]
+include::{snippets}/test-buy-book_missing-customer-id/auto-section.adoc[]
+include::{snippets}/test-get-all-book/auto-section.adoc[]
+include::{snippets}/test-get-all-book_-no-books/auto-section.adoc[]
+include::{snippets}/test-search-book/auto-section.adoc[]
+include::{snippets}/test-search-book-all-search-parameter-missing/auto-section.adoc[]
+include::{snippets}/test-search-book-allow-if-all-search-parameter-not-missing/auto-section.adoc[]
+include::{snippets}/test-search-book_-no-books/auto-section.adoc[]
+
+The data which we can see as part of documentation will loaded from MockMvc Test case data

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class TestUtil {
 
-    private static ObjectMapper mapper = new ObjectMapper();
+    public static ObjectMapper mapper = new ObjectMapper();
 
     public static String convertObjectToJson(Object object) throws JsonProcessingException {
         ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
