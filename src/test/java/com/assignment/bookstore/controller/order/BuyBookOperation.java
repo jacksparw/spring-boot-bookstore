@@ -1,5 +1,6 @@
 package com.assignment.bookstore.controller.order;
 
+import com.assignment.bookstore.TestUtil;
 import com.assignment.bookstore.beans.dto.AddressDTO;
 import com.assignment.bookstore.beans.dto.CustomerDTO;
 import com.assignment.bookstore.beans.dto.book.BookDTO;
@@ -7,10 +8,8 @@ import com.assignment.bookstore.beans.dto.order.BookOrderLineDTO;
 import com.assignment.bookstore.beans.dto.order.OrderRequestDTO;
 import com.assignment.bookstore.beans.dto.order.OrderResponseDTO;
 import com.assignment.bookstore.controller.OrderController;
-import com.assignment.bookstore.TestUtil;
 import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.service.OrderService;
-import com.assignment.bookstore.service.OrderServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -53,7 +52,7 @@ public class BuyBookOperation {
 
         validOrderRequestDTO = OrderRequestDTO.builder()
                 .customer(dummy_customer)
-                .book(Arrays.asList(dummyBookOrderLineDTO))
+                .books(Arrays.asList(dummyBookOrderLineDTO))
                 .build();
     }
 
@@ -127,7 +126,7 @@ public class BuyBookOperation {
     @Test
     void testBuyBook_MissingBookId() throws Exception {
 
-        validOrderRequestDTO.getBook().get(0).setBookId(null);
+        validOrderRequestDTO.getBooks().get(0).setBookId(null);
 
         mockMvc.perform(
                 post("/buy")
@@ -141,7 +140,7 @@ public class BuyBookOperation {
     @Test
     void testBuyBook_InvalidBookId() throws Exception {
 
-        validOrderRequestDTO.getBook().get(0).setBookId(-1L);
+        validOrderRequestDTO.getBooks().get(0).setBookId(-1L);
 
         mockMvc.perform(
                 post("/buy")
@@ -155,7 +154,7 @@ public class BuyBookOperation {
     @Test
     void testBuyBook_InvalidOrderQuantity() throws Exception {
 
-        validOrderRequestDTO.getBook().get(0).setOrderQuantity(-12);
+        validOrderRequestDTO.getBooks().get(0).setOrderQuantity(-12);
 
         mockMvc.perform(
                 post("/buy")
@@ -169,7 +168,7 @@ public class BuyBookOperation {
     @Test
     void testBuyBook_MissingOrderQuantity() throws Exception {
 
-        validOrderRequestDTO.getBook().get(0).setOrderQuantity(null);
+        validOrderRequestDTO.getBooks().get(0).setOrderQuantity(null);
 
         mockMvc.perform(
                 post("/buy")

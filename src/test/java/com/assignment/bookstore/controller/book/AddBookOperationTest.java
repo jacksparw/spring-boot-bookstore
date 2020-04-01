@@ -1,9 +1,9 @@
 package com.assignment.bookstore.controller.book;
 
+import com.assignment.bookstore.TestUtil;
 import com.assignment.bookstore.beans.dto.book.BookDTO;
 import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
 import com.assignment.bookstore.controller.BookController;
-import com.assignment.bookstore.TestUtil;
 import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.service.BookService;
 import org.junit.jupiter.api.BeforeEach;

@@ -37,5 +37,7 @@ public interface MessageConstants {
 		String INVALID_BOOK_ID = "invalid bookId";
 		String QUANTITY_IS_MISSING = "quantity is missing";
 		String INVALID_QUANTITY = "invalid quantity must be greater than zero";
+		String CUSTOMER_DETAILS_MISSING = "customer details missing";
+		String BOOKS_DETAILS_MISSING = "books details missing";
 	}
 }

@@ -12,7 +12,8 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.GENERIC_ERROR_MESSAGE;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.INVALID_MESSAGE;
 import static com.assignment.bookstore.util.MessageConstants.RequestStatus.STATUS_FAILURE;
 
 @Log4j2

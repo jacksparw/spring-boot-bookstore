@@ -6,7 +6,6 @@ import com.assignment.bookstore.beans.dto.mapper.BookMapper;
 import com.assignment.bookstore.beans.dto.order.BookOrderLineDTO;
 import com.assignment.bookstore.beans.dto.order.OrderRequestDTO;
 import com.assignment.bookstore.beans.dto.order.OrderResponseDTO;
-import com.assignment.bookstore.exception.NoDataFoundException;
 import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.repository.BookRepository;
 import com.assignment.bookstore.repository.CustomerRepository;
@@ -54,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = new Order();
 
-        Set<BookOrderLine> bookOrderLines = requestDTO.getBook()
+        Set<BookOrderLine> bookOrderLines = requestDTO.getBooks()
                 .stream()
                 .map(this::createBookOrderLine)
                 .collect(Collectors.toCollection(HashSet::new));

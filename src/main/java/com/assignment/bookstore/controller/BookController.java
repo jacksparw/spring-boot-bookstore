@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
-import static com.assignment.bookstore.util.MessageConstants.RequestStatus.*;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.SEARCH_PARAMETER_MISSING;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.TITLE_IS_MANDATORY;
+import static com.assignment.bookstore.util.MessageConstants.RequestStatus.STATUS_SUCCESS;
 import static com.assignment.bookstore.util.MessageConstants.SuccessMessage.*;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 

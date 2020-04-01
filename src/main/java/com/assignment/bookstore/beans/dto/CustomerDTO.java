@@ -6,7 +6,8 @@ import lombok.Data;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.CUSTOMER_ID_IS_INVALID;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.CUSTOMER_ID_IS_MANDATORY;
 
 @Data
 @Builder

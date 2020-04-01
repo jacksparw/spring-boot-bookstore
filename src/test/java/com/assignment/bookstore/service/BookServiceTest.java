@@ -5,8 +5,7 @@ import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
 import com.assignment.bookstore.beans.dto.book.BookResponseDTO;
 import com.assignment.bookstore.exception.NoDataFoundException;
 import com.assignment.bookstore.exception.ValidationException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,10 +17,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BookServiceTest {
 
-    private @Autowired
-    BookService bookService;
+    private @Autowired BookService bookService;
 
     private BookDTO validBookDTO;
 
@@ -52,6 +51,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @Order(1)
     public void testAddBook() {
 
         //given
@@ -64,6 +64,7 @@ public class BookServiceTest {
     }
 
     @Test
+    @Order(2)
     public void testAddBook_BookAlreadyPresent() {
 
         //given
