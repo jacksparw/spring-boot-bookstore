@@ -22,8 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.BOOK_NOT_FOUND;
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.CUSTOMER_NOT_FOUND;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -79,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new NoDataFoundException(BOOK_NOT_FOUND));
 
         if (book.getStock().getBookCount() < bookOrderLineDTO.getOrderQuantity()) {
-            throw new ValidationException("some books in order are out of stock");
+            throw new ValidationException(LIMITED_OR_OUT_OF_STOCK);
         }
 
         Stock stock = book.getStock();

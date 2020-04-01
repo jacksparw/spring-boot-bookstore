@@ -33,7 +33,7 @@ public class Book {
     @Column(nullable = false)
     private @EqualsAndHashCode.Exclude BigDecimal price;
 
-    @ManyToOne(cascade = {
+    @OneToOne(cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,

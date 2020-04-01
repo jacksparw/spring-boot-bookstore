@@ -23,5 +23,6 @@ public interface MessageConstants {
 		String SEARCH_PARAMETER_MISSING = "please provide title or author or isbn as search parameter";
 		String CUSTOMER_NOT_FOUND = "customer not found";
 		String BOOK_NOT_FOUND = "Book Not Found";
+		String LIMITED_OR_OUT_OF_STOCK = "some books in order have limited or out of stock";
 	}
 }

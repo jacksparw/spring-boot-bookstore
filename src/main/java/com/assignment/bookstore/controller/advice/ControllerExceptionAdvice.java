@@ -21,7 +21,7 @@ public class ControllerExceptionAdvice {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<GenericResponseDTO> validationException(Exception ex) {
-        log.error(ex.getMessage(), ex);
+        log.error(ex.getMessage());
 
         GenericResponseDTO response = new GenericResponseDTO();
         response.setMessage(ex.getMessage());
@@ -54,7 +54,7 @@ public class ControllerExceptionAdvice {
     @ExceptionHandler(NoDataFoundException.class)
     public ResponseEntity<GenericResponseDTO> handleNoResultException(Exception ex) {
 
-        log.error(ex.getMessage());
+        log.info(ex.getMessage());
 
         GenericResponseDTO response = new GenericResponseDTO();
         response.setMessage(ex.getMessage());
