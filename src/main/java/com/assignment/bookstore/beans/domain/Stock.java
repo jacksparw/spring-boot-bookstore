@@ -23,7 +23,7 @@ public class Stock {
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH})
-    private Book book;
+    private @ToString.Exclude Book book;
 
     @Column
     private @EqualsAndHashCode.Exclude Integer bookCount;

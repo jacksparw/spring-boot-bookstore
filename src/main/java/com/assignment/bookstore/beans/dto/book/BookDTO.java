@@ -2,6 +2,7 @@ package com.assignment.bookstore.beans.dto.book;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookDTO {
@@ -23,6 +25,6 @@ public class BookDTO {
     @NotEmpty(message = ISBN_IS_MANDATORY)
     private String isbn;
 
-    @NotNull @Min(value = 1, message = INVALID_PRICE)
+    @NotNull(message = PRICE_IS_MISSING) @Min(value = 1, message = INVALID_PRICE)
     private BigDecimal price;
 }

@@ -5,7 +5,7 @@ import com.assignment.bookstore.beans.domain.Book;
 import com.assignment.bookstore.beans.domain.Stock;
 import com.assignment.bookstore.beans.dto.AuthorDTO;
 import com.assignment.bookstore.beans.dto.MediaCoverage;
-import com.assignment.bookstore.beans.dto.book.BookAuthorDTO;
+import com.assignment.bookstore.beans.dto.book.BookResponseDTO;
 import com.assignment.bookstore.beans.dto.book.BookDTO;
 import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
 import com.assignment.bookstore.beans.dto.mapper.AuthorMapper;
@@ -32,7 +32,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.BOOK_NOT_FOUND;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -59,14 +59,14 @@ public class BookServiceImpl implements BookService {
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public void addBook(BookRequestDTO bookRequest) {
 
-        Optional<Book> optionalBook = bookRepository.findBookByTitle(bookRequest.getTitle());
-
         Author author = authorRepository
                 .findById(bookRequest.getAuthorId())
-                .orElseThrow(() -> new NoDataFoundException("Author not found"));
+                .orElseThrow(() -> new NoDataFoundException(AUTHOR_NOT_FOUND));
+
+        Optional<Book> optionalBook = bookRepository.findBookByTitleOrIsbn(bookRequest.getTitle(), bookRequest.getIsbn());
 
         if (optionalBook.isPresent()) {
-            throw new ValidationException("Book Already Present");
+            throw new ValidationException(BOOK_ALREADY_PRESENT);
         }
 
         Book book = bookMapper.bookDtoToBook(bookRequest);
@@ -76,7 +76,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookAuthorDTO> getBooks() {
+    public List<BookResponseDTO> getBooks() {
 
         List<Book> bookList = bookRepository.findAll();
 
@@ -84,7 +84,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookAuthorDTO> searchBooks(String title, String author, String isbn) {
+    public List<BookResponseDTO> searchBooks(String title, String author, String isbn) {
 
         Specification<Book> bookSpecification =
                 Specification.where(new BookAuthorSpec(author))
@@ -96,7 +96,7 @@ public class BookServiceImpl implements BookService {
         return convertToBookAuthorDTOList(bookList);
     }
 
-    private List<BookAuthorDTO> convertToBookAuthorDTOList(List<Book> bookList) {
+    private List<BookResponseDTO> convertToBookAuthorDTOList(List<Book> bookList) {
         if (bookList == null || bookList.size() == 0)
             throw new NoDataFoundException(BOOK_NOT_FOUND);
 
@@ -106,11 +106,11 @@ public class BookServiceImpl implements BookService {
                         Collectors.mapping(bookMapper::bookToBookDTO,
                                 toList())));
 
-        List<BookAuthorDTO> finalList = new ArrayList<>();
+        List<BookResponseDTO> finalList = new ArrayList<>();
 
         mapping.forEach(
                 (authorDTO, books) ->
-                        finalList.add(new BookAuthorDTO(authorDTO, books)));
+                        finalList.add(new BookResponseDTO(authorDTO, books)));
 
         return finalList;
     }

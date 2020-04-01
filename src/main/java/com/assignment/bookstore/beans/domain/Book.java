@@ -26,7 +26,7 @@ public class Book {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
-            CascadeType.REFRESH})
+            CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "author", nullable = false)
     private Author author;
 

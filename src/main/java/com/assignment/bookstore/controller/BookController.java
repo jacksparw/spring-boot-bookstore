@@ -31,7 +31,7 @@ public class BookController {
 
 		GenericResponseDTO response = createSuccessResponse(BOOK_DETAILS);
 		response.setData(bookService.getBooks());
-		
+
 		return ResponseEntity.ok(response);
 	}
 

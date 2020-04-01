@@ -11,7 +11,6 @@ import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.repository.BookRepository;
 import com.assignment.bookstore.repository.CustomerRepository;
 import com.assignment.bookstore.repository.OrderRepository;
-import com.assignment.bookstore.repository.StockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -51,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
 
         Customer customer = customerRepository
                 .findById(requestDTO.getCustomer().getCustomerId())
-                .orElseThrow(() -> new NoDataFoundException(CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new ValidationException(CUSTOMER_NOT_FOUND));
 
         Order order = new Order();
 
@@ -75,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
 
         Book book = bookRepository
                 .findById(bookOrderLineDTO.getBookId())
-                .orElseThrow(() -> new NoDataFoundException(BOOK_NOT_FOUND));
+                .orElseThrow(() -> new ValidationException(BOOK_NOT_FOUND));
 
         if (book.getStock().getBookCount() < bookOrderLineDTO.getOrderQuantity()) {
             throw new ValidationException(LIMITED_OR_OUT_OF_STOCK);
@@ -100,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(bookOrderLine -> new BigDecimal(bookOrderLine.getOrderQuantity()).multiply(bookOrderLine.getBook().getPrice()))
                 .reduce(BigDecimal::add).get());
 
-        responseDTO.setAddressDTO(addressMapper.addressToAddressDTO(savedOrder.getCustomer().getAddress()));
+        responseDTO.setDispatchAddress(addressMapper.addressToAddressDTO(savedOrder.getCustomer().getAddress()));
 
         responseDTO.setBookDTOList(savedOrder
                 .getBookOrderLines()
