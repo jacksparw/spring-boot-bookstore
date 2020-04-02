@@ -32,7 +32,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -56,15 +59,9 @@ class AddBookOperationTest {
                 .isbn("1")
                 .build();
 
-        mockMvc =  MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(documentationConfiguration(restDocumentation))
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
                 .alwaysDo(JacksonResultHandlers.prepareJackson(TestUtil.mapper))
-                .alwaysDo(MockMvcRestDocumentation.document("{method-name}",
-                        Preprocessors.preprocessRequest(),
-                        Preprocessors.preprocessResponse(
-                                ResponseModifyingPreprocessors.replaceBinaryContent(),
-                                ResponseModifyingPreprocessors.limitJsonArrayLength(TestUtil.mapper),
-                                Preprocessors.prettyPrint())))
                 .apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
                         .uris()
                         .withScheme("http")
@@ -81,25 +78,32 @@ class AddBookOperationTest {
                                 AutoDocumentation.description(),
                                 AutoDocumentation.methodAndPath(),
                                 AutoDocumentation.section()))
+                .alwaysDo(document("{method-name}",
+                        preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())))
                 .build();
     }
 
-    @Test
-    void testAddBook_MissingRequestBody() throws Exception {
-        mockMvc.perform(
-                post("/book"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.message").value("invalid message"));
-    }
-
+    /**
+     *
+     * @title This is my custom title
+     */
     @Test
     void testAddBook_InvalidJsonRequestBody() throws Exception {
         mockMvc.perform(
                 post("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{This is not valid Json should fail][/}"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("failure"))
+                .andExpect(jsonPath("$.message").value("invalid message"));
+    }
+
+
+    @Test
+    void testAddBook_MissingRequestBody() throws Exception {
+        mockMvc.perform(
+                post("/book"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
