@@ -46,8 +46,9 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDTO createOrder(OrderRequestDTO requestDTO) {
 
 
+
         Optional<Customer> optionalCustomer = customerRepository
-                .findByCustomerName(requestDTO.getCustomerName());
+                .findByEmail(requestDTO.getEmail());
 
         Customer customer;
 
@@ -56,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
         }else{
             Customer saveCustomer = new Customer();
             saveCustomer.setCustomerName(requestDTO.getCustomerName());
+            saveCustomer.setEmail(requestDTO.getEmail());
 
             customer = customerRepository.save(saveCustomer);
         }
@@ -81,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
         BookOrderLine orderLine = new BookOrderLine();
 
         Book book = bookRepository
-                .findById(bookOrderLineDTO.getBookId())
+                .findBookByIsbn(bookOrderLineDTO.getIsbn())
                 .orElseThrow(() -> new ValidationException(BOOK_NOT_FOUND));
 
         if (book.getStock().getBookCount() < bookOrderLineDTO.getOrderQuantity()) {

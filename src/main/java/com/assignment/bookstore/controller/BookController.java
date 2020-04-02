@@ -4,6 +4,7 @@ import com.assignment.bookstore.beans.dto.GenericResponseDTO;
 import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
 import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.service.BookService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,7 @@ import static com.assignment.bookstore.util.MessageConstants.RequestStatus.STATU
 import static com.assignment.bookstore.util.MessageConstants.SuccessMessage.*;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+@Log4j2
 @RestController
 public class BookController {
 
@@ -30,8 +32,12 @@ public class BookController {
 	@GetMapping(value = "${paths.getBooks}", produces = APPLICATION_JSON)
 	public ResponseEntity<GenericResponseDTO> getAllBook() {
 
+		log.debug("BookController getAllBook called");
+
 		GenericResponseDTO response = createSuccessResponse(BOOK_DETAILS);
 		response.setData(bookService.getBooks());
+
+		log.debug("BookController getAllBook successful");
 
 		return ResponseEntity.ok(response);
 	}
@@ -44,9 +50,12 @@ public class BookController {
 		if(StringUtils.isEmpty(title) && StringUtils.isEmpty(author) && StringUtils.isEmpty(isbn))
 			throw new ValidationException(SEARCH_PARAMETER_MISSING);
 
+		log.debug(String.format("BookController searchBook validation successful with parameters title %s Author %s ISBN %s", title, author, isbn));
 
 		GenericResponseDTO response = createSuccessResponse(BOOK_DETAILS);
 		response.setData(bookService.searchBooks(title, author, isbn));
+
+		log.debug("BookController searchBook Successful");
 
 		return ResponseEntity.ok(response);
 	}
@@ -54,13 +63,19 @@ public class BookController {
 	@PostMapping(value = "${paths.addBook}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
 	public ResponseEntity<GenericResponseDTO> addBook(@RequestBody @Valid BookRequestDTO book, BindingResult result) {
 
+		log.debug("BookController addBook called");
+
 		if (result.hasErrors()) {
 			for (ObjectError error : result.getAllErrors()) {
 				throw new ValidationException(error.getDefaultMessage());
 			}
 		}
 
+		log.debug(String.format("BookController addBook validation successful with ISBN %s ", book.getIsbn()));
+
 		bookService.addBook(book);
+
+		log.debug("BookController addBook Successful");
 
 		return ResponseEntity.ok(createSuccessResponse(BOOK_ADDED));
 	}
@@ -68,11 +83,17 @@ public class BookController {
 	@GetMapping(value = "${paths.search.mediaCoverage}", produces = APPLICATION_JSON)
 	public ResponseEntity<GenericResponseDTO> searchMediaCoverage(@RequestParam(name="isbn") String isbn) {
 
+		log.debug("BookController searchMediaCoverage called");
+
 		if(StringUtils.isEmpty(isbn))
 			throw new ValidationException(ISBN_IS_MANDATORY);
 
+		log.debug(String.format("BookController searchMediaCoverage validation with isbn %s", isbn));
+
 		GenericResponseDTO response = createSuccessResponse(MEDIA_COVERAGE_DETAILS);
 		response.setData(bookService.searchMediaCoverage(isbn));
+
+		log.debug("BookController searchMediaCoverage Successful");
 
 		return ResponseEntity.ok(response);
 	}

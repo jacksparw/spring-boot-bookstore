@@ -54,12 +54,13 @@ public class OrderControllerTest {
     public void setup(RestDocumentationContextProvider restDocumentation) {
 
         BookOrderLineDTO dummyBookOrderLineDTO = BookOrderLineDTO.builder()
-                .bookId(1L)
+                .isbn("1")
                 .orderQuantity(10)
                 .build();
 
         validOrderRequestDTO = OrderRequestDTO.builder()
                 .customerName("Dummy Customer")
+                .email("dummy@bookstore.com")
                 .books(Arrays.asList(dummyBookOrderLineDTO))
                 .build();
 
@@ -135,9 +136,9 @@ public class OrderControllerTest {
     }
 
     @Test
-    void testBuyBook_MissingBookId() throws Exception {
+    void testBuyBook_missingCustomerEmail() throws Exception {
 
-        validOrderRequestDTO.getBooks().get(0).setBookId(null);
+        validOrderRequestDTO.setEmail(null);
 
         mockMvc.perform(
                 post("/buy")
@@ -145,13 +146,28 @@ public class OrderControllerTest {
                         .content(TestUtil.convertObjectToJson(validOrderRequestDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.message").value("book id is missing"));
+                .andExpect(jsonPath("$.message").value("invalid email"));
+    }
+
+
+    @Test
+    void testBuyBook_invalidCustomerEmail() throws Exception {
+
+        validOrderRequestDTO.setEmail("this is not a valid email.com");
+
+        mockMvc.perform(
+                post("/buy")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtil.convertObjectToJson(validOrderRequestDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("failure"))
+                .andExpect(jsonPath("$.message").value("invalid email"));
     }
 
     @Test
-    void testBuyBook_InvalidBookId() throws Exception {
+    void testBuyBook_MissingISBN() throws Exception {
 
-        validOrderRequestDTO.getBooks().get(0).setBookId(-1L);
+        validOrderRequestDTO.getBooks().get(0).setIsbn(null);
 
         mockMvc.perform(
                 post("/buy")
@@ -159,7 +175,7 @@ public class OrderControllerTest {
                         .content(TestUtil.convertObjectToJson(validOrderRequestDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.message").value("invalid bookId"));
+                .andExpect(jsonPath("$.message").value("isbn is mandatory"));
     }
 
     @Test

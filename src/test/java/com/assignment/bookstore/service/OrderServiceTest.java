@@ -27,17 +27,18 @@ public class OrderServiceTest {
     public void setup() {
 
         BookOrderLineDTO dummyBookOrderLineDTO1 = BookOrderLineDTO.builder()
-                .bookId(1L)
+                .isbn("1")
                 .orderQuantity(10)
                 .build();
 
         BookOrderLineDTO dummyBookOrderLineDTO2 = BookOrderLineDTO.builder()
-                .bookId(2L)
+                .isbn("2")
                 .orderQuantity(4)
                 .build();
 
         validOrderRequestDTO = OrderRequestDTO.builder()
                 .customerName("Dummy Customer")
+                .email("dummy@bookstore.com")
                 .books(Arrays.asList(dummyBookOrderLineDTO1, dummyBookOrderLineDTO2))
                 .build();
     }
@@ -47,7 +48,7 @@ public class OrderServiceTest {
     public void testCreateOrder_UNKNOWN_Book(){
 
         //given
-        validOrderRequestDTO.getBooks().get(0).setBookId(1000L);
+        validOrderRequestDTO.getBooks().get(0).setIsbn("1000");
 
         //When
         Exception exception = assertThrows(ValidationException.class, () -> orderService.createOrder(validOrderRequestDTO));

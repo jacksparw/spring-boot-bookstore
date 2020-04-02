@@ -43,10 +43,6 @@ include::{snippets}/test-add-book_-missing-author-details/auto-section.adoc[]
 include::{snippets}/test-add-book_-missing-price/auto-section.adoc[]
 
 
-=== ADD BOOK VALIDATION IF REQUEST BODY IS MISSING
-include::{snippets}/test-add-book_-missing-request-body/auto-section.adoc[]
-
-
 === ADD BOOK VALIDATION IF STOCK IS MISSING
 include::{snippets}/test-add-book_missing-stock/auto-section.adoc[]
 
@@ -59,16 +55,12 @@ include::{snippets}/test-buy-book/auto-section.adoc[]
 include::{snippets}/test-buy-book_-book-not-found-in-d-b/auto-section.adoc[]
 
 
-=== BUY BOOK VALIDATION IF INVALID BOOK ID IS PROVIDED
-include::{snippets}/test-buy-book_-invalid-book-id/auto-section.adoc[]
-
-
 === BUY BOOK VALIDATION IF INVALID QUANTITY IS PROVIDED
 include::{snippets}/test-buy-book_-invalid-order-quantity/auto-section.adoc[]
 
 
-=== BUY BOOK VALIDATION IF BOOK ID IS MISSING
-include::{snippets}/test-buy-book_-missing-book-id/auto-section.adoc[]
+=== BUY BOOK VALIDATION IF BOOK ISBN IS MISSING
+include::{snippets}/test-buy-book_-missing-i-s-b-n/auto-section.adoc[]
 
 
 === BUY BOOK VALIDATION IF QUANTITY IS MISSING
@@ -81,6 +73,14 @@ include::{snippets}/test-buy-book_-stock-error/auto-section.adoc[]
 
 === BUY BOOK VALIDATION IF CUSTOMER NAME IS MISSING
 include::{snippets}/test-buy-book_missing-customer-name/auto-section.adoc[]
+
+
+=== BUY BOOK VALIDATION IF CUSTOMER EMAIL IS MISSING
+include::{snippets}/test-buy-book_missing-customer-email/auto-section.adoc[]
+
+
+=== BUY BOOK VALIDATION IF CUSTOMER EMAIL IS INVALID
+include::{snippets}/test-buy-book_invalid-customer-email/auto-section.adoc[]
 
 
 === GET ALL THE BOOKS

@@ -4,6 +4,7 @@ import com.assignment.bookstore.beans.dto.GenericResponseDTO;
 import com.assignment.bookstore.beans.dto.order.OrderRequestDTO;
 import com.assignment.bookstore.exception.ValidationException;
 import com.assignment.bookstore.service.OrderService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -17,6 +18,7 @@ import static com.assignment.bookstore.util.MessageConstants.RequestStatus.STATU
 import static com.assignment.bookstore.util.MessageConstants.SuccessMessage.PURCHASE_DETAILS;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+@Log4j2
 @RestController
 public class OrderController {
 
@@ -29,14 +31,20 @@ public class OrderController {
     @PostMapping(value = "${paths.buyBook}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
 	public ResponseEntity<GenericResponseDTO> buyBook(@RequestBody @Valid OrderRequestDTO requestDTO, BindingResult result) {
 
+        log.info("OrderController buyBook called");
+
         if (result.hasErrors()) {
             for (ObjectError error : result.getAllErrors()) {
                 throw new ValidationException(error.getDefaultMessage());
             }
         }
 
+        log.info("OrderController buyBook validation successful");
+
         GenericResponseDTO response = createSuccessResponse(PURCHASE_DETAILS);
         response.setData(orderService.createOrder(requestDTO));
+
+        log.info("OrderController buyBook order placed");
 
         return ResponseEntity.ok(response);
 	}

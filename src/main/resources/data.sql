@@ -21,4 +21,4 @@ insert into book (isbn,title,author,price,stock_id, VERSION) values(6,'Spring En
 
 insert into book (isbn,title,author,price,stock_id, VERSION) values(7,'Pro Spring Integration',2,522.60,6, 0);
 
-insert into customer(CUSTOMER_NAME, VERSION) values ('Tim', 0);
+insert into customer(CUSTOMER_NAME, email, VERSION) values ('Tim', 'tim@bookstore.com', 0);

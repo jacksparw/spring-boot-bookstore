@@ -1,5 +1,6 @@
 package com.assignment.bookstore.beans.dto.order;
 
+import com.assignment.bookstore.validators.annotation.EmailConstraint;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,6 +16,12 @@ import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.CUSTOM
 @Builder
 public class OrderRequestDTO {
 
-    private @NotEmpty(message = CUSTOMER_NAME_IS_MANDATORY) String customerName;
-    private @NotNull(message = BOOKS_DETAILS_MISSING) List<@Valid BookOrderLineDTO> books;
+    @NotEmpty(message = CUSTOMER_NAME_IS_MANDATORY)
+    private String customerName;
+
+    @EmailConstraint
+    private String email;
+
+    @NotNull(message = BOOKS_DETAILS_MISSING)
+    private List<@Valid BookOrderLineDTO> books;
 }

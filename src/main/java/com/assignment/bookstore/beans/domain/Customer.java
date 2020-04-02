@@ -16,8 +16,11 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String customerName;
+
+    @Column(nullable = false, unique = true)
+    private String email;
 
     @OneToMany(mappedBy = "customer", cascade = {
             CascadeType.DETACH,
