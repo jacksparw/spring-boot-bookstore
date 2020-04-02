@@ -39,4 +39,7 @@ public class Book {
             CascadeType.REFRESH})
     @JoinColumn(name = "stockId")
     private @EqualsAndHashCode.Exclude Stock stock;
+
+    @Version
+    private Long version;
 }

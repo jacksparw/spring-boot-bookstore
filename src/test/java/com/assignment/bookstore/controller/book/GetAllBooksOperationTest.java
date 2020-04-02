@@ -105,11 +105,11 @@ class GetAllBooksOperationTest {
 
         Mockito.when(bookService.getBooks()).thenReturn(Arrays.asList(responseDTO));
 
-        mockMvc.perform(get("/book"))
+        mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Book Details"))
-                .andExpect(jsonPath("$.data[:1].author.name").value("Dummy Author"))
+                .andExpect(jsonPath("$.data[:1].author.authorName").value("Dummy Author"))
                 .andExpect(jsonPath("$.data[:1].books[:1].title").value("DummyBook"));
     }
 
@@ -118,7 +118,7 @@ class GetAllBooksOperationTest {
     void testGetAllBook_NoBooks() throws Exception {
         Mockito.when(bookService.getBooks()).thenThrow(new NoDataFoundException("No Book Found"));
 
-        mockMvc.perform(get("/book"))
+        mockMvc.perform(get("/books"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("No Book Found"));

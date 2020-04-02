@@ -32,7 +32,9 @@ public class ControllerExceptionAdvice {
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class, HttpMediaTypeNotSupportedException.class})
-    public ResponseEntity<GenericResponseDTO> handleHttpMessageNotReadableException() {
+    public ResponseEntity<GenericResponseDTO> handleHttpMessageNotReadableException(Exception ex) {
+        log.error(ex.getMessage());
+
         GenericResponseDTO response = new GenericResponseDTO();
         response.setMessage(INVALID_MESSAGE);
         response.setStatus(STATUS_FAILURE);

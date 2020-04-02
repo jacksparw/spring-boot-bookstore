@@ -8,4 +8,5 @@ import org.mapstruct.Mapper;
 public interface AuthorMapper {
 
     AuthorDTO authorToAuthorDTO(Author author);
+    Author authorDtoToAuthor(AuthorDTO author);
 }

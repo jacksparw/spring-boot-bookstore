@@ -16,16 +16,8 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String customerName;
-
-    @OneToOne(cascade = {
-            CascadeType.DETACH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST,
-            CascadeType.REFRESH})
-    @JoinColumn(name = "address")
-    private Address address;
 
     @OneToMany(mappedBy = "customer", cascade = {
             CascadeType.DETACH,
@@ -33,4 +25,7 @@ public class Customer {
             CascadeType.PERSIST,
             CascadeType.REFRESH})
     private @EqualsAndHashCode.Exclude @ToString.Exclude List<Order> orders;
+
+    @Version
+    private Long version;
 }

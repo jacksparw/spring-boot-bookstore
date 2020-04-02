@@ -26,4 +26,7 @@ public class Author {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private @EqualsAndHashCode.Exclude @ToString.Exclude List<Book> book;
+
+    @Version
+    private Long version;
 }

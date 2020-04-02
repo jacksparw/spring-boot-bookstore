@@ -32,7 +32,8 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.BOOK_ALREADY_PRESENT;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.BOOK_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -59,9 +60,18 @@ public class BookServiceImpl implements BookService {
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public void addBook(BookRequestDTO bookRequest) {
 
-        Author author = authorRepository
-                .findById(bookRequest.getAuthorId())
-                .orElseThrow(() -> new NoDataFoundException(AUTHOR_NOT_FOUND));
+        AuthorDTO authorDTO = bookRequest.getAuthorDTO();
+
+        Optional<Author> optionalAuthor =authorRepository
+                .findAuthorByAuthorName(authorDTO.getAuthorName());
+
+        Author author;
+
+        if(optionalAuthor.isPresent()){
+            author = optionalAuthor.get();
+        }else{
+            author = authorRepository.save(authorMapper.authorDtoToAuthor(authorDTO));
+        }
 
         Optional<Book> optionalBook = bookRepository.findBookByTitleOrIsbn(bookRequest.getTitle(), bookRequest.getIsbn());
 
@@ -116,17 +126,27 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @HystrixCommand(fallbackMethod = "getFallbackMediaCoverage",
+    @HystrixCommand(ignoreExceptions = {NoDataFoundException.class},
+            fallbackMethod = "getFallbackMediaCoverage",
     commandProperties = {
-            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",value = "2000")
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",value = "7000")
     })
-    public List<MediaCoverage> searchMediaCoverage(String title) {
+    public List<MediaCoverage> searchMediaCoverage(String isbn) {
+
+        Book book = bookRepository.findBookByIsbn(isbn)
+                .orElseThrow(() -> new NoDataFoundException(BOOK_NOT_FOUND));
+
         ResponseEntity<MediaCoverage[]> response = restTemplate.getForEntity(mediaURL, MediaCoverage[].class);
 
-        return Arrays.asList(response.getBody())
+        List<MediaCoverage> mediaCoverages = Arrays.asList(response.getBody())
                 .parallelStream()
-                .filter(e -> e.getTitle().contains(title) || e.getBody().contains(title))
+                .filter(e -> e.getTitle().contains(book.getTitle()) || e.getBody().contains(book.getTitle()))
                 .collect(toList());
+
+        if(mediaCoverages.size() < 1)
+            throw new NoDataFoundException("Media Coverage not found");
+
+        return mediaCoverages;
     }
 
     public List<MediaCoverage> getFallbackMediaCoverage(String title) {

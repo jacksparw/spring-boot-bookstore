@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.ISBN_IS_MANDATORY;
 import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.SEARCH_PARAMETER_MISSING;
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.TITLE_IS_MANDATORY;
 import static com.assignment.bookstore.util.MessageConstants.RequestStatus.STATUS_SUCCESS;
 import static com.assignment.bookstore.util.MessageConstants.SuccessMessage.*;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -36,15 +36,18 @@ public class BookController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping(value = "${paths.search.mediaCoverage}", produces = APPLICATION_JSON)
-	public ResponseEntity<GenericResponseDTO> searchMediaCoverage(@RequestParam(name="title") String title) {
-		
-		if(StringUtils.isEmpty(title))
-			throw new ValidationException(TITLE_IS_MANDATORY);
+	@GetMapping(value = "${paths.searchBook}", produces = APPLICATION_JSON)
+	public ResponseEntity<GenericResponseDTO> searchBook(@RequestParam(required = false) String title,
+														 @RequestParam(required = false) String author,
+														 @RequestParam(required = false) String isbn) {
 
-		GenericResponseDTO response = createSuccessResponse(MEDIA_COVERAGE_DETAILS);
-		response.setData(bookService.searchMediaCoverage(title));
-		
+		if(StringUtils.isEmpty(title) && StringUtils.isEmpty(author) && StringUtils.isEmpty(isbn))
+			throw new ValidationException(SEARCH_PARAMETER_MISSING);
+
+
+		GenericResponseDTO response = createSuccessResponse(BOOK_DETAILS);
+		response.setData(bookService.searchBooks(title, author, isbn));
+
 		return ResponseEntity.ok(response);
 	}
 
@@ -62,17 +65,14 @@ public class BookController {
 		return ResponseEntity.ok(createSuccessResponse(BOOK_ADDED));
 	}
 
-	@GetMapping(value = "${paths.searchBook}", produces = APPLICATION_JSON)
-	public ResponseEntity<GenericResponseDTO> searchBook(@RequestParam(required = false) String title,
-														 @RequestParam(required = false) String author,
-														 @RequestParam(required = false) String isbn) {
+	@GetMapping(value = "${paths.search.mediaCoverage}", produces = APPLICATION_JSON)
+	public ResponseEntity<GenericResponseDTO> searchMediaCoverage(@RequestParam(name="isbn") String isbn) {
 
-		if(StringUtils.isEmpty(title) && StringUtils.isEmpty(author) && StringUtils.isEmpty(isbn))
-			throw new ValidationException(SEARCH_PARAMETER_MISSING);
+		if(StringUtils.isEmpty(isbn))
+			throw new ValidationException(ISBN_IS_MANDATORY);
 
-
-		GenericResponseDTO response = createSuccessResponse(BOOK_DETAILS);
-		response.setData(bookService.searchBooks(title, author, isbn));
+		GenericResponseDTO response = createSuccessResponse(MEDIA_COVERAGE_DETAILS);
+		response.setData(bookService.searchMediaCoverage(isbn));
 
 		return ResponseEntity.ok(response);
 	}

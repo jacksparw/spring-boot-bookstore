@@ -29,4 +29,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)
     private @EqualsAndHashCode.Exclude @ToString.Exclude Set<BookOrderLine> bookOrderLines;
+
+    @Version
+    private Long version;
 }

@@ -4,8 +4,6 @@ import capital.scalable.restdocs.AutoDocumentation;
 import capital.scalable.restdocs.jackson.JacksonResultHandlers;
 import capital.scalable.restdocs.response.ResponseModifyingPreprocessors;
 import com.assignment.bookstore.TestUtil;
-import com.assignment.bookstore.beans.dto.AddressDTO;
-import com.assignment.bookstore.beans.dto.CustomerDTO;
 import com.assignment.bookstore.beans.dto.book.BookDTO;
 import com.assignment.bookstore.beans.dto.order.BookOrderLineDTO;
 import com.assignment.bookstore.beans.dto.order.OrderRequestDTO;
@@ -55,18 +53,13 @@ public class OrderControllerTest {
     @BeforeEach
     public void setup(RestDocumentationContextProvider restDocumentation) {
 
-        CustomerDTO dummy_customer = CustomerDTO.builder()
-                .customerId(1L)
-                .name("Dummy Customer")
-                .build();
-
         BookOrderLineDTO dummyBookOrderLineDTO = BookOrderLineDTO.builder()
                 .bookId(1L)
                 .orderQuantity(10)
                 .build();
 
         validOrderRequestDTO = OrderRequestDTO.builder()
-                .customer(dummy_customer)
+                .customerName("Dummy Customer")
                 .books(Arrays.asList(dummyBookOrderLineDTO))
                 .build();
 
@@ -107,15 +100,8 @@ public class OrderControllerTest {
                 .isbn("1")
                 .build();
 
-        AddressDTO dummyAddressDTO = AddressDTO.builder()
-                .addressLine1("Dummy Address")
-                .city("DummyCity")
-                .state("DummyState")
-                .build();
-
         OrderResponseDTO responseDTO = OrderResponseDTO.builder()
-                .customerName("Dummy Customer")
-                .dispatchAddress(dummyAddressDTO)
+                .customerName(validOrderRequestDTO.getCustomerName())
                 .bookDTOList(Arrays.asList(validBookDTO))
                 .totalAmount(BigDecimal.TEN)
                 .build();
@@ -130,31 +116,14 @@ public class OrderControllerTest {
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Purchase Details"))
                 .andExpect(jsonPath("$.data.customerName").value("Dummy Customer"))
-                .andExpect(jsonPath("$.data.dispatchAddress.addressLine1").value("Dummy Address"))
-                .andExpect(jsonPath("$.data.dispatchAddress.state").value("DummyState"))
-                .andExpect(jsonPath("$.data.dispatchAddress.city").value("DummyCity"))
                 .andExpect(jsonPath("$.data.totalAmount").value("10"))
                 .andExpect(jsonPath("$.data.bookDTOList[:1].title").value("DummyBook"));
     }
 
     @Test
-    void testBuyBook_missingCustomerId() throws Exception {
+    void testBuyBook_missingCustomerName() throws Exception {
 
-        validOrderRequestDTO.getCustomer().setCustomerId(null);
-
-        mockMvc.perform(
-                post("/buy")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestUtil.convertObjectToJson(validOrderRequestDTO)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.message").value("customer id is mandatory"));
-    }
-
-    @Test
-    void testBuyBook_InvalidCustomerId() throws Exception {
-
-        validOrderRequestDTO.getCustomer().setCustomerId(-1L);
+        validOrderRequestDTO.setCustomerName(null);
 
         mockMvc.perform(
                 post("/buy")
@@ -162,7 +131,7 @@ public class OrderControllerTest {
                         .content(TestUtil.convertObjectToJson(validOrderRequestDTO)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.message").value("customer id is invalid"));
+                .andExpect(jsonPath("$.message").value("customer name is mandatory"));
     }
 
     @Test
@@ -219,20 +188,6 @@ public class OrderControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
                 .andExpect(jsonPath("$.message").value("quantity is missing"));
-    }
-
-    @Test
-    void testBuyBook_CustomerNotFoundInDB() throws Exception {
-
-        Mockito.when(orderService.createOrder(validOrderRequestDTO)).thenThrow(new ValidationException("Customer Not Found"));
-
-        mockMvc.perform(
-                post("/buy")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestUtil.convertObjectToJson(validOrderRequestDTO)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.message").value("Customer Not Found"));
     }
 
     @Test

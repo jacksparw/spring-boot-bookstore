@@ -1,7 +1,6 @@
 package com.assignment.bookstore.service;
 
 import com.assignment.bookstore.beans.domain.*;
-import com.assignment.bookstore.beans.dto.mapper.AddressMapper;
 import com.assignment.bookstore.beans.dto.mapper.BookMapper;
 import com.assignment.bookstore.beans.dto.order.BookOrderLineDTO;
 import com.assignment.bookstore.beans.dto.order.OrderRequestDTO;
@@ -17,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.*;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.BOOK_NOT_FOUND;
+import static com.assignment.bookstore.util.MessageConstants.ErrorMessage.LIMITED_OR_OUT_OF_STOCK;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -29,27 +30,35 @@ public class OrderServiceImpl implements OrderService {
     private final CustomerRepository customerRepository;
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
-    private final AddressMapper addressMapper;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             CustomerRepository customerRepository,
                             BookRepository bookRepository,
-                            BookMapper bookMapper,
-                            AddressMapper addressMapper) {
+                            BookMapper bookMapper) {
         this.orderRepository = orderRepository;
         this.customerRepository = customerRepository;
         this.bookRepository = bookRepository;
         this.bookMapper = bookMapper;
-        this.addressMapper = addressMapper;
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public OrderResponseDTO createOrder(OrderRequestDTO requestDTO) {
 
-        Customer customer = customerRepository
-                .findById(requestDTO.getCustomer().getCustomerId())
-                .orElseThrow(() -> new ValidationException(CUSTOMER_NOT_FOUND));
+
+        Optional<Customer> optionalCustomer = customerRepository
+                .findByCustomerName(requestDTO.getCustomerName());
+
+        Customer customer;
+
+        if(optionalCustomer.isPresent()){
+            customer = optionalCustomer.get();
+        }else{
+            Customer saveCustomer = new Customer();
+            saveCustomer.setCustomerName(requestDTO.getCustomerName());
+
+            customer = customerRepository.save(saveCustomer);
+        }
 
         Order order = new Order();
 
@@ -97,8 +106,6 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(bookOrderLine -> new BigDecimal(bookOrderLine.getOrderQuantity()).multiply(bookOrderLine.getBook().getPrice()))
                 .reduce(BigDecimal::add).get());
-
-        responseDTO.setDispatchAddress(addressMapper.addressToAddressDTO(savedOrder.getCustomer().getAddress()));
 
         responseDTO.setBookDTOList(savedOrder
                 .getBookOrderLines()

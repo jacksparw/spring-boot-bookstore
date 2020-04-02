@@ -7,47 +7,47 @@ This is an example output for a service running at http://localhost:8080
 include::{snippets}/test-add-book/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF BOOK ALREADY PRESENT
+=== ADD BOOK VALIDATION IF BOOK ALREADY PRESENT
 include::{snippets}/test-add-book_-book-already-present/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF INVALID AUTHOR ID IS PROVIDED
-include::{snippets}/test-add-book_-invalid-author-id/auto-section.adoc[]
+=== ADD BOOK VALIDATION IF AUTHOR NAME IS EMPTY
+include::{snippets}/test-add-book_-author-name-empty/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF INVALID ISBN IS PROVIDED
+=== ADD BOOK VALIDATION IF INVALID ISBN IS PROVIDED
 include::{snippets}/test-add-book_-invalid-i-s-b-n/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF INVALID JSON REQUEST BODY IS PROVIDED
+=== ADD BOOK VALIDATION IF INVALID JSON REQUEST BODY IS PROVIDED
 include::{snippets}/test-add-book_-invalid-json-request-body/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF INVALID PRICE IS PROVIDED
+=== ADD BOOK VALIDATION IF INVALID PRICE IS PROVIDED
 include::{snippets}/test-add-book_-invalid-price/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF INVALID TITLE IS PROVIDED
+=== ADD BOOK VALIDATION IF INVALID TITLE IS PROVIDED
 include::{snippets}/test-add-book_-invalid-title/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF INVALID STOCK IS PROVIDED
+=== ADD BOOK VALIDATION IF INVALID STOCK IS PROVIDED
 include::{snippets}/test-add-book_-less-than-one-stock/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF AUTHOR ID IS MISSING
-include::{snippets}/test-add-book_-missing-author-id/auto-section.adoc[]
+=== ADD BOOK VALIDATION IF AUTHOR DETAILS IS MISSING
+include::{snippets}/test-add-book_-missing-author-details/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF PRICE IS MISSING
+=== ADD BOOK VALIDATION IF PRICE IS MISSING
 include::{snippets}/test-add-book_-missing-price/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF REQUEST BODY IS MISSING
+=== ADD BOOK VALIDATION IF REQUEST BODY IS MISSING
 include::{snippets}/test-add-book_-missing-request-body/auto-section.adoc[]
 
 
-=== ADD BOOK SHOULD FAIL IF STOCK IS MISSING
+=== ADD BOOK VALIDATION IF STOCK IS MISSING
 include::{snippets}/test-add-book_missing-stock/auto-section.adoc[]
 
 
@@ -55,47 +55,39 @@ include::{snippets}/test-add-book_missing-stock/auto-section.adoc[]
 include::{snippets}/test-buy-book/auto-section.adoc[]
 
 
-=== BUY BOOK SHOULD FAIL IF BOOK NOT FOUND
+=== BUY BOOK VALIDATION IF BOOK NOT FOUND
 include::{snippets}/test-buy-book_-book-not-found-in-d-b/auto-section.adoc[]
 
 
-=== BUY BOOK SHOULD FAIL IF CUSTOMER NOT FOUND
-include::{snippets}/test-buy-book_-customer-not-found-in-d-b/auto-section.adoc[]
-
-
-=== BUY BOOK SHOULD FAIL IF INVALID BOOK ID IS PROVIDED
+=== BUY BOOK VALIDATION IF INVALID BOOK ID IS PROVIDED
 include::{snippets}/test-buy-book_-invalid-book-id/auto-section.adoc[]
 
 
-=== BUY BOOK SHOULD FAIL IF INVALID CUSTOMER ID IS PROVIDED
-include::{snippets}/test-buy-book_-invalid-customer-id/auto-section.adoc[]
-
-
-=== BUY BOOK SHOULD FAIL IF INVALID QUANTITY IS PROVIDED
+=== BUY BOOK VALIDATION IF INVALID QUANTITY IS PROVIDED
 include::{snippets}/test-buy-book_-invalid-order-quantity/auto-section.adoc[]
 
 
-=== BUY BOOK SHOULD FAIL IF BOOK ID IS MISSING
+=== BUY BOOK VALIDATION IF BOOK ID IS MISSING
 include::{snippets}/test-buy-book_-missing-book-id/auto-section.adoc[]
 
 
-=== BUY BOOK SHOULD FAIL IF QUANTITY IS MISSING
+=== BUY BOOK VALIDATION IF QUANTITY IS MISSING
 include::{snippets}/test-buy-book_-missing-order-quantity/auto-section.adoc[]
 
 
-=== BUY BOOK SHOULD FAIL IF OUT OF STOCK
+=== BUY BOOK VALIDATION IF OUT OF STOCK
 include::{snippets}/test-buy-book_-stock-error/auto-section.adoc[]
 
 
-=== BUY BOOK SHOULD FAIL IF CUSTOMER ID IS MISSING
-include::{snippets}/test-buy-book_missing-customer-id/auto-section.adoc[]
+=== BUY BOOK VALIDATION IF CUSTOMER NAME IS MISSING
+include::{snippets}/test-buy-book_missing-customer-name/auto-section.adoc[]
 
 
 === GET ALL THE BOOKS
 include::{snippets}/test-get-all-book/auto-section.adoc[]
 
 
-=== get all the books should fail is no book in db
+=== get all the books validation is no book in db
 include::{snippets}/test-get-all-book_-no-books/auto-section.adoc[]
 
 
@@ -103,7 +95,7 @@ include::{snippets}/test-get-all-book_-no-books/auto-section.adoc[]
 include::{snippets}/test-search-book/auto-section.adoc[]
 
 
-=== SEARCH BOOK SHOULD FAIL IF NO SEARCH PARAMETER IS PROVIDED
+=== SEARCH BOOK VALIDATION IF NO SEARCH PARAMETER IS PROVIDED
 include::{snippets}/test-search-book-all-search-parameter-missing/auto-section.adoc[]
 
 
@@ -111,7 +103,7 @@ include::{snippets}/test-search-book-all-search-parameter-missing/auto-section.a
 include::{snippets}/test-search-book-allow-if-all-search-parameter-not-missing/auto-section.adoc[]
 
 
-=== SEARCH BOOK SHOULD FAIL IS NO BOOK IS FOUND
+=== SEARCH BOOK VALIDATION IS NO BOOK IS FOUND
 include::{snippets}/test-search-book_-no-books/auto-section.adoc[]
 
 The data which we can see as part of documentation will loaded from MockMvc Test case data

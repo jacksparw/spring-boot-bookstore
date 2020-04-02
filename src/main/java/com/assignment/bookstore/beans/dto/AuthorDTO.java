@@ -1,7 +1,8 @@
 package com.assignment.bookstore.beans.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @AllArgsConstructor
@@ -9,6 +10,8 @@ import lombok.*;
 @Builder
 public class AuthorDTO {
 
-    private @JsonProperty("name") String authorName;
+    @NotEmpty(message = "Author name is mandatory")
+    private String authorName;
+
     private @EqualsAndHashCode.Exclude String description;
 }

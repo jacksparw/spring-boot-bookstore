@@ -30,4 +30,7 @@ public class Stock {
     public Stock(Integer bookCount) {
         this.bookCount = bookCount;
     }
+
+    @Version
+    private Long version;
 }

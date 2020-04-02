@@ -31,8 +31,7 @@ public interface MessageConstants {
 		String INVALID_AUTHOR_ID = "invalid authorId";
 		String STOCK_COUNT_MISSING = "stock count missing";
 		String INVALID_STOCK = "invalid stock";
-		String CUSTOMER_ID_IS_MANDATORY = "customer id is mandatory";
-		String CUSTOMER_ID_IS_INVALID = "customer id is invalid";
+		String CUSTOMER_NAME_IS_MANDATORY = "customer name is mandatory";
 		String BOOK_ID_IS_MISSING = "book id is missing";
 		String INVALID_BOOK_ID = "invalid bookId";
 		String QUANTITY_IS_MISSING = "quantity is missing";

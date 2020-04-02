@@ -153,7 +153,7 @@ class SearchBookOperationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.message").value("Book Details"))
-                .andExpect(jsonPath("$.data[:1].author.name").value("Dummy Author"))
+                .andExpect(jsonPath("$.data[:1].author.authorName").value("Dummy Author"))
                 .andExpect(jsonPath("$.data[:1].books[:1].title").value("DummyBook"));
     }
 }

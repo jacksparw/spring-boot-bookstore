@@ -1,5 +1,6 @@
 package com.assignment.bookstore.service;
 
+import com.assignment.bookstore.beans.dto.AuthorDTO;
 import com.assignment.bookstore.beans.dto.book.BookDTO;
 import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
 import com.assignment.bookstore.beans.dto.book.BookResponseDTO;
@@ -23,6 +24,7 @@ public class BookServiceTest {
     private @Autowired BookService bookService;
 
     private BookDTO validBookDTO;
+    private AuthorDTO validAuthorDTO;
 
     @BeforeEach
     public void setUp() {
@@ -31,23 +33,11 @@ public class BookServiceTest {
                 .price(BigDecimal.TEN)
                 .isbn("11")
                 .build();
-    }
 
-    @Test
-    public void testAddBook_UnknownAuthor() {
-
-        //Given
-        BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(11L);
-        bookRequestDto.setCount(10);
-
-        //When
-        Exception exception = assertThrows(NoDataFoundException.class, () -> bookService.addBook(bookRequestDto));
-
-        //Then
-        String expectedMessage = "Author not found";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
+        validAuthorDTO = AuthorDTO.builder()
+                .authorName("DummyAuthor")
+                .description("This is a dummy Author")
+                .build();
     }
 
     @Test
@@ -56,7 +46,7 @@ public class BookServiceTest {
 
         //given
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         //when
@@ -69,7 +59,7 @@ public class BookServiceTest {
 
         //given
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         //when Book is already added by testAddBook test-case

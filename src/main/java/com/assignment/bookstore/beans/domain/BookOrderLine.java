@@ -24,4 +24,7 @@ public class BookOrderLine {
 
     @Column
     private @EqualsAndHashCode.Exclude Integer orderQuantity = 0;
+
+    @Version
+    private Long version;
 }

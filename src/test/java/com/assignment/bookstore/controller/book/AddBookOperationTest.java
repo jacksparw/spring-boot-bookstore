@@ -2,8 +2,8 @@ package com.assignment.bookstore.controller.book;
 
 import capital.scalable.restdocs.AutoDocumentation;
 import capital.scalable.restdocs.jackson.JacksonResultHandlers;
-import capital.scalable.restdocs.response.ResponseModifyingPreprocessors;
 import com.assignment.bookstore.TestUtil;
+import com.assignment.bookstore.beans.dto.AuthorDTO;
 import com.assignment.bookstore.beans.dto.book.BookDTO;
 import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
 import com.assignment.bookstore.controller.BookController;
@@ -24,7 +24,6 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.cli.CliDocumentation;
 import org.springframework.restdocs.http.HttpDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
-import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -33,9 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.math.BigDecimal;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,6 +46,7 @@ class AddBookOperationTest {
 
     private MockMvc mockMvc;
     private BookDTO validBookDTO;
+    private AuthorDTO validAuthorDTO;
 
     @BeforeEach
     public void setup(RestDocumentationContextProvider restDocumentation) {
@@ -57,6 +55,11 @@ class AddBookOperationTest {
                 .title("DummyBook")
                 .price(BigDecimal.TEN)
                 .isbn("1")
+                .build();
+
+        validAuthorDTO = AuthorDTO.builder()
+                .authorName("DummyAuthor")
+                .description("This is a dummy Author")
                 .build();
 
         this.mockMvc = MockMvcBuilders
@@ -90,7 +93,7 @@ class AddBookOperationTest {
     @Test
     void testAddBook_InvalidJsonRequestBody() throws Exception {
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{This is not valid Json should fail][/}"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -103,7 +106,7 @@ class AddBookOperationTest {
     @Test
     void testAddBook_MissingRequestBody() throws Exception {
         mockMvc.perform(
-                post("/book"))
+                post("/books"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
@@ -111,46 +114,47 @@ class AddBookOperationTest {
     }
 
     @Test
-    void testAddBook_MissingAuthorId() throws Exception {
+    void testAddBook_MissingAuthorDetails() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
         bookRequestDto.setCount(10);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.message").value("authorId missing"));
+                .andExpect(jsonPath("$.message").value("Author details is missing"));
     }
 
     @Test
-    void testAddBook_InvalidAuthorId() throws Exception {
+    void testAddBook_AuthorNameEmpty() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(-234L);
+        validAuthorDTO.setAuthorName(null);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.message").value("invalid authorId"));
+                .andExpect(jsonPath("$.message").value("Author name is mandatory"));
     }
 
     @Test
     void testAddBook_missingStock() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -163,11 +167,11 @@ class AddBookOperationTest {
     void testAddBook_LessThanOneStock() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(-12);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -180,13 +184,13 @@ class AddBookOperationTest {
     void testAddBook_InvalidTitle() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         bookRequestDto.setTitle(null);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -199,13 +203,13 @@ class AddBookOperationTest {
     void testAddBook_InvalidISBN() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         bookRequestDto.setIsbn(null);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -218,13 +222,13 @@ class AddBookOperationTest {
     void testAddBook_MissingPrice() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         bookRequestDto.setPrice(null);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -237,13 +241,13 @@ class AddBookOperationTest {
     void testAddBook_InvalidPrice() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         bookRequestDto.setPrice(new BigDecimal(-12));
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -256,13 +260,13 @@ class AddBookOperationTest {
     void testAddBook_BookAlreadyPresent() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         Mockito.doThrow(new ValidationException("book already present")).when(bookService).addBook(bookRequestDto);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -275,13 +279,13 @@ class AddBookOperationTest {
     void testAddBook() throws Exception {
 
         BookRequestDTO bookRequestDto = new BookRequestDTO(validBookDTO);
-        bookRequestDto.setAuthorId(1L);
+        bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
         Mockito.doNothing().when(bookService).addBook(bookRequestDto);
 
         mockMvc.perform(
-                post("/book")
+                post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtil.convertObjectToJson(bookRequestDto)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
