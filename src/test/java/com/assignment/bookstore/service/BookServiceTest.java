@@ -6,9 +6,13 @@ import com.assignment.bookstore.beans.dto.book.BookRequestDTO;
 import com.assignment.bookstore.beans.dto.book.BookResponseDTO;
 import com.assignment.bookstore.exception.NoDataFoundException;
 import com.assignment.bookstore.exception.ValidationException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,7 +45,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @Order(1)
+    @Transactional
     public void testAddBook() {
 
         //given
@@ -54,7 +58,7 @@ public class BookServiceTest {
     }
 
     @Test
-    @Order(2)
+    @Transactional
     public void testAddBook_BookAlreadyPresent() {
 
         //given
@@ -62,7 +66,8 @@ public class BookServiceTest {
         bookRequestDto.setAuthorDTO(validAuthorDTO);
         bookRequestDto.setCount(10);
 
-        //when Book is already added by testAddBook test-case
+        //When
+        bookService.addBook(bookRequestDto);
         Exception exception = assertThrows(ValidationException.class, () -> bookService.addBook(bookRequestDto));
 
         //then
