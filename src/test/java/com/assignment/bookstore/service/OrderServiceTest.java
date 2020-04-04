@@ -4,9 +4,13 @@ import com.assignment.bookstore.beans.dto.order.BookOrderLineDTO;
 import com.assignment.bookstore.beans.dto.order.OrderRequestDTO;
 import com.assignment.bookstore.beans.dto.order.OrderResponseDTO;
 import com.assignment.bookstore.exception.ValidationException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -44,7 +48,7 @@ public class OrderServiceTest {
     }
 
     @Test
-    @Order(1)
+    @Transactional
     public void testCreateOrder_UNKNOWN_Book(){
 
         //given
@@ -60,8 +64,11 @@ public class OrderServiceTest {
     }
 
     @Test
-    @Order(2)
+    @Transactional
     public void testCreateOrder(){
+
+        //Given
+        validOrderRequestDTO.getBooks().get(0).setIsbn("1");
 
         //When
         OrderResponseDTO responseDTO = orderService.createOrder(validOrderRequestDTO);
@@ -74,11 +81,15 @@ public class OrderServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Transactional
     public void testCreateOrder_OutOfStock(){
 
+        //Given
+        validOrderRequestDTO.getBooks().get(0).setIsbn("1");
+
         //When
-        Exception exception = assertThrows(ValidationException.class, () ->orderService.createOrder(validOrderRequestDTO));
+        orderService.createOrder(validOrderRequestDTO);
+        Exception exception = assertThrows(ValidationException.class, () -> orderService.createOrder(validOrderRequestDTO));
 
         //then
         String expectedMessage = "some books in order have limited or out of stock";
