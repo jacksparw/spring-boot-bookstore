@@ -67,9 +67,6 @@ public class OrderServiceTest {
     @Transactional
     public void testCreateOrder(){
 
-        //Given
-        validOrderRequestDTO.getBooks().get(0).setIsbn("1");
-
         //When
         OrderResponseDTO responseDTO = orderService.createOrder(validOrderRequestDTO);
 
@@ -83,9 +80,6 @@ public class OrderServiceTest {
     @Test
     @Transactional
     public void testCreateOrder_OutOfStock(){
-
-        //Given
-        validOrderRequestDTO.getBooks().get(0).setIsbn("1");
 
         //When
         orderService.createOrder(validOrderRequestDTO);
