@@ -106,7 +106,8 @@ class AddBookOperationTest {
     @Test
     void testAddBook_MissingRequestBody() throws Exception {
         mockMvc.perform(
-                post("/books"))
+                post("/books")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("failure"))
